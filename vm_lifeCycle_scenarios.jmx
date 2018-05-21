@@ -7151,7 +7151,7 @@ log.error(&quot;**********Failed to Start nested host. attempt no: &quot;+ ${__j
           <hashTree/>
         </hashTree>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Scanrio 2 - disk copy and move" enabled="false">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Scanario 2 - disk copy and move" enabled="false">
         <stringProp name="ThreadGroup.on_sample_error">stopthread</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
@@ -7969,23 +7969,15 @@ log.error(&quot;**********Failed to move disk id: &quot; + vars.get(&quot;diskid
             <stringProp name="3648196">what</stringProp>
             <stringProp name="1881441367">api_prefix</stringProp>
             <stringProp name="-249250188">max_count</stringProp>
-            <stringProp name="95396059">dc_id</stringProp>
-            <stringProp name="1670021285">source_sd_id</stringProp>
-            <stringProp name="-198370917">target_sd_id</stringProp>
-            <stringProp name="-210729554">retries_for_disk_status_check</stringProp>
             <stringProp name="-1204598295">retries_for_vm_start</stringProp>
             <stringProp name="-999553498">mem_addition</stringProp>
           </collectionProp>
           <collectionProp name="UserParameters.thread_values">
-            <collectionProp name="1390485260">
-              <stringProp name="-1961122919">name=vm_L1_05-03_1</stringProp>
+            <collectionProp name="795578462">
+              <stringProp name="-1051529474">cluster=*L1*</stringProp>
               <stringProp name="116892">vms</stringProp>
               <stringProp name="-514276539">/ovirt-engine/api</stringProp>
               <stringProp name="1567">10</stringProp>
-              <stringProp name="-309734537">d608083d-ff34-43b6-84c4-d7585d32c9af</stringProp>
-              <stringProp name="-650893056">ba2a6b97-e88f-4871-95e2-09a1636d4ddd</stringProp>
-              <stringProp name="-650893056">ba2a6b97-e88f-4871-95e2-09a1636d4ddd</stringProp>
-              <stringProp name="1629">30</stringProp>
               <stringProp name="1629">30</stringProp>
               <stringProp name="-857887757">268435456</stringProp>
             </collectionProp>
