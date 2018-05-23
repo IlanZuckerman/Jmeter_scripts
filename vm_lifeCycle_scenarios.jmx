@@ -7151,7 +7151,7 @@ log.error(&quot;**********Failed to Start nested host. attempt no: &quot;+ ${__j
           <hashTree/>
         </hashTree>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Scanario 2 - disk copy and move" enabled="false">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Scanario 2 - disk copy and move" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">stopthread</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
@@ -7227,10 +7227,12 @@ log.error(&quot;**********Failed to Start nested host. attempt no: &quot;+ ${__j
             <stringProp name="1670021285">source_sd_id</stringProp>
             <stringProp name="-198370917">target_sd_id</stringProp>
             <stringProp name="-210729554">retries_for_disk_status_check</stringProp>
+            <stringProp name="418337598">source_storage_domain_name</stringProp>
+            <stringProp name="-2046818892">target_storage_domain_name</stringProp>
           </collectionProp>
           <collectionProp name="UserParameters.thread_values">
-            <collectionProp name="-391098948">
-              <stringProp name="1964356464">status=up and cluster=${cluster_name}</stringProp>
+            <collectionProp name="2115190778">
+              <stringProp name="1248057961">status=up and storage=${iscsi_L1_vms_sd_1}</stringProp>
               <stringProp name="116892">vms</stringProp>
               <stringProp name="-514276539">/ovirt-engine/api</stringProp>
               <stringProp name="1567">10</stringProp>
@@ -7238,13 +7240,15 @@ log.error(&quot;**********Failed to Start nested host. attempt no: &quot;+ ${__j
               <stringProp name="-650893056">ba2a6b97-e88f-4871-95e2-09a1636d4ddd</stringProp>
               <stringProp name="-650893056">ba2a6b97-e88f-4871-95e2-09a1636d4ddd</stringProp>
               <stringProp name="1629">30</stringProp>
+              <stringProp name="2083590512">iscsi_L1_vms_sd_1</stringProp>
+              <stringProp name="2083590513">iscsi_L1_vms_sd_2</stringProp>
             </collectionProp>
           </collectionProp>
           <boolProp name="UserParameters.per_iteration">false</boolProp>
           <stringProp name="TestPlan.comments">name=${vm_prefix}* and status=down and cluster=${cluster_name}     max_count	200</stringProp>
         </UserParameters>
         <hashTree/>
-        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="get disks" enabled="false"/>
+        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="get disks DELME" enabled="false"/>
         <hashTree>
           <UserParameters guiclass="UserParametersGui" testclass="UserParameters" testname="args" enabled="true">
             <collectionProp name="UserParameters.names">
@@ -7394,14 +7398,142 @@ log.error(&quot;**********Failed to Start nested host. attempt no: &quot;+ ${__j
             <hashTree/>
           </hashTree>
         </hashTree>
+        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="Get storage domain id (target and source) according name" enabled="true"/>
+        <hashTree>
+          <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="Source" enabled="true"/>
+          <hashTree>
+            <BeanShellSampler guiclass="BeanShellSamplerGui" testclass="BeanShellSampler" testname="generate query for source_storage_domain_name" enabled="true">
+              <stringProp name="BeanShellSampler.query">import java.net.URLEncoder;
+
+String encodedQuery = URLEncoder.encode(&quot;name=${source_storage_domain_name} and status=active&quot;);
+//log.info(&quot;================== ${uquery} ==================&quot;);
+vars.put(&quot;query&quot;, encodedQuery);
+</stringProp>
+              <stringProp name="BeanShellSampler.filename"></stringProp>
+              <stringProp name="BeanShellSampler.parameters"></stringProp>
+              <boolProp name="BeanShellSampler.resetInterpreter">false</boolProp>
+            </BeanShellSampler>
+            <hashTree/>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="get sd_source_id" enabled="true">
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+                <collectionProp name="Arguments.arguments"/>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain">${engine}</stringProp>
+              <stringProp name="HTTPSampler.port">${http_port}</stringProp>
+              <stringProp name="HTTPSampler.protocol">${http_protocol}</stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">${api_prefix}/storagedomains?search=${query}</stringProp>
+              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree>
+              <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="regex sd_source_id" enabled="true">
+                <stringProp name="RegexExtractor.useHeaders">false</stringProp>
+                <stringProp name="RegexExtractor.refname">sd_source_id</stringProp>
+                <stringProp name="RegexExtractor.regex">href=&quot;${api_prefix}/storagedomains/(.+?)&quot; id</stringProp>
+                <stringProp name="RegexExtractor.template">$1$</stringProp>
+                <stringProp name="RegexExtractor.default"></stringProp>
+                <stringProp name="RegexExtractor.match_number">1</stringProp>
+                <stringProp name="Sample.scope">all</stringProp>
+                <stringProp name="Scope.variable">vm_id</stringProp>
+              </RegexExtractor>
+              <hashTree/>
+              <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response code Assertion ${__samplerName}" enabled="true">
+                <collectionProp name="Asserion.test_strings">
+                  <stringProp name="49586">200</stringProp>
+                </collectionProp>
+                <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+                <boolProp name="Assertion.assume_success">false</boolProp>
+                <intProp name="Assertion.test_type">16</intProp>
+              </ResponseAssertion>
+              <hashTree/>
+              <BeanShellListener guiclass="TestBeanGUI" testclass="BeanShellListener" testname="Logging" enabled="true">
+                <boolProp name="resetInterpreter">false</boolProp>
+                <stringProp name="parameters"></stringProp>
+                <stringProp name="filename"></stringProp>
+                <stringProp name="script">log.info(&quot;Extracted id for source storage domain &quot; + vars.get(&quot;source_storage_domain_name&quot;) + &quot; : &quot; + vars.get(&quot;sd_source_id&quot;));</stringProp>
+              </BeanShellListener>
+              <hashTree/>
+            </hashTree>
+          </hashTree>
+          <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="Target" enabled="true"/>
+          <hashTree>
+            <BeanShellSampler guiclass="BeanShellSamplerGui" testclass="BeanShellSampler" testname="generate query for target_storage_domain_name" enabled="true">
+              <stringProp name="BeanShellSampler.query">import java.net.URLEncoder;
+
+String encodedQuery = URLEncoder.encode(&quot;name=${target_storage_domain_name} and status=active&quot;);
+//log.info(&quot;================== ${uquery} ==================&quot;);
+vars.put(&quot;query&quot;, encodedQuery);
+</stringProp>
+              <stringProp name="BeanShellSampler.filename"></stringProp>
+              <stringProp name="BeanShellSampler.parameters"></stringProp>
+              <boolProp name="BeanShellSampler.resetInterpreter">false</boolProp>
+            </BeanShellSampler>
+            <hashTree/>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="get sd_target_id" enabled="true">
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+                <collectionProp name="Arguments.arguments"/>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain">${engine}</stringProp>
+              <stringProp name="HTTPSampler.port">${http_port}</stringProp>
+              <stringProp name="HTTPSampler.protocol">${http_protocol}</stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">${api_prefix}/storagedomains?search=${query}</stringProp>
+              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree>
+              <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="regex sd_target_id" enabled="true">
+                <stringProp name="RegexExtractor.useHeaders">false</stringProp>
+                <stringProp name="RegexExtractor.refname">sd_target_id</stringProp>
+                <stringProp name="RegexExtractor.regex">href=&quot;${api_prefix}/storagedomains/(.+?)&quot; id</stringProp>
+                <stringProp name="RegexExtractor.template">$1$</stringProp>
+                <stringProp name="RegexExtractor.default"></stringProp>
+                <stringProp name="RegexExtractor.match_number">1</stringProp>
+                <stringProp name="Sample.scope">all</stringProp>
+                <stringProp name="Scope.variable">vm_id</stringProp>
+              </RegexExtractor>
+              <hashTree/>
+              <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response code Assertion ${__samplerName}" enabled="true">
+                <collectionProp name="Asserion.test_strings">
+                  <stringProp name="49586">200</stringProp>
+                </collectionProp>
+                <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+                <boolProp name="Assertion.assume_success">false</boolProp>
+                <intProp name="Assertion.test_type">16</intProp>
+              </ResponseAssertion>
+              <hashTree/>
+              <BeanShellListener guiclass="TestBeanGUI" testclass="BeanShellListener" testname="Logging" enabled="true">
+                <boolProp name="resetInterpreter">false</boolProp>
+                <stringProp name="parameters"></stringProp>
+                <stringProp name="filename"></stringProp>
+                <stringProp name="script">log.info(&quot;Extracted id for target storage domain &quot; + vars.get(&quot;target_storage_domain_name&quot;) + &quot; : &quot; + vars.get(&quot;sd_target_id&quot;));</stringProp>
+              </BeanShellListener>
+              <hashTree/>
+            </hashTree>
+          </hashTree>
+        </hashTree>
         <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="Get random vm" enabled="true"/>
         <hashTree>
           <BeanShellSampler guiclass="BeanShellSamplerGui" testclass="BeanShellSampler" testname="generate query" enabled="true">
             <stringProp name="BeanShellSampler.query">import java.net.URLEncoder;
 
 String encodedQuery = URLEncoder.encode(&quot;${uquery}&quot;);
-//log.info(&quot;================== ${uquery} ==================&quot;);
+
 vars.put(&quot;query&quot;, encodedQuery);
+log.info(&quot;================== &quot; + vars.get(&quot;query&quot;) + &quot; ==================&quot;);
 </stringProp>
             <stringProp name="BeanShellSampler.filename"></stringProp>
             <stringProp name="BeanShellSampler.parameters"></stringProp>
@@ -7457,9 +7589,9 @@ log.info(&quot;***********VM id chosen: &quot; + vars.get(&quot;enttid&quot;));<
           </BeanShellListener>
           <hashTree/>
         </hashTree>
-        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="Get VMs" enabled="true"/>
+        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="Get VM Disk ID" enabled="false"/>
         <hashTree>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="get vm disk" enabled="true">
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="get vm diskid" enabled="true">
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
               <collectionProp name="Arguments.arguments"/>
             </elementProp>
@@ -7503,11 +7635,11 @@ log.info(&quot;***********VM id chosen: &quot; + vars.get(&quot;enttid&quot;));<
             <boolProp name="resetInterpreter">false</boolProp>
             <stringProp name="parameters"></stringProp>
             <stringProp name="filename"></stringProp>
-            <stringProp name="script">log.info(&quot;***********Disk id : &quot; + vars.get(&quot;diskid&quot;) + &quot; For vm id: &quot; + vars.get(&quot;enttid&quot;));</stringProp>
+            <stringProp name="script">log.info(&quot;***********Manipulating Disk id : &quot; + vars.get(&quot;diskid&quot;) + &quot; For vm id: &quot; + vars.get(&quot;enttid&quot;));</stringProp>
           </BeanShellListener>
           <hashTree/>
         </hashTree>
-        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="Copy disk" enabled="true"/>
+        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="Copy disk" enabled="false"/>
         <hashTree>
           <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Copy disk to target_sd_id" enabled="true">
             <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
@@ -7558,7 +7690,7 @@ log.info(&quot;***********VM id chosen: &quot; + vars.get(&quot;enttid&quot;));<
           </BeanShellListener>
           <hashTree/>
         </hashTree>
-        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="Validate disk status" enabled="true"/>
+        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="Validate disk status" enabled="false"/>
         <hashTree>
           <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="get disk status" enabled="true">
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
@@ -7690,7 +7822,7 @@ log.error(&quot;**********Failed to move disk id: &quot; + vars.get(&quot;diskid
             <hashTree/>
           </hashTree>
         </hashTree>
-        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="Move Disk" enabled="true"/>
+        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="Move Disk" enabled="false"/>
         <hashTree>
           <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Move disk to target_sd_id" enabled="true">
             <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
@@ -7738,7 +7870,7 @@ log.error(&quot;**********Failed to move disk id: &quot; + vars.get(&quot;diskid
             <hashTree/>
           </hashTree>
         </hashTree>
-        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="Validate disk status" enabled="true"/>
+        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="Validate disk status" enabled="false"/>
         <hashTree>
           <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="get disk status" enabled="true">
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
@@ -7973,8 +8105,8 @@ log.error(&quot;**********Failed to move disk id: &quot; + vars.get(&quot;diskid
             <stringProp name="-999553498">mem_addition</stringProp>
           </collectionProp>
           <collectionProp name="UserParameters.thread_values">
-            <collectionProp name="795578462">
-              <stringProp name="-1051529474">cluster=*L1*</stringProp>
+            <collectionProp name="332140951">
+              <stringProp name="-1023080476">cluster=*L1* and name=vm_L1_05-03_1</stringProp>
               <stringProp name="116892">vms</stringProp>
               <stringProp name="-514276539">/ovirt-engine/api</stringProp>
               <stringProp name="1567">10</stringProp>
@@ -8039,7 +8171,48 @@ vars.put(&quot;query&quot;, encodedQuery);
               <intProp name="Assertion.test_type">16</intProp>
             </ResponseAssertion>
             <hashTree/>
+            <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="Regular Expression - vms_lst" enabled="true">
+              <stringProp name="RegexExtractor.useHeaders">false</stringProp>
+              <stringProp name="RegexExtractor.refname">vms_lst</stringProp>
+              <stringProp name="RegexExtractor.regex">href=&quot;${api_prefix}/${what}/(.+?)&quot; id</stringProp>
+              <stringProp name="RegexExtractor.template">$1$</stringProp>
+              <stringProp name="RegexExtractor.default"></stringProp>
+              <stringProp name="RegexExtractor.match_number">-1</stringProp>
+              <stringProp name="Sample.scope">all</stringProp>
+              <stringProp name="Scope.variable">vm_id</stringProp>
+            </RegexExtractor>
+            <hashTree/>
           </hashTree>
+          <BeanShellSampler guiclass="BeanShellSamplerGui" testclass="BeanShellSampler" testname="Store vms_lst" enabled="true">
+            <stringProp name="BeanShellSampler.query">import java.util.Map;
+org.apache.jmeter.threads.JMeterVariables vars = ctx.getVariables();
+//log.info(vars.get(&quot;enttid_matchNr&quot;));
+
+// store text to be displayed in a String variable
+StringBuffer output = new StringBuffer( &quot;&quot; );
+
+ 
+// iterate items and store them to props
+for ( Map.Entry entry : vars.entrySet() ) {
+	if (entry.getKey().toString().contains(&quot;_g&quot;)){
+		continue;
+	}
+	else if (entry.getKey().toString().contains(&quot;vms_lst_matchNr&quot;)){
+		props.put(entry.getKey(), entry.getValue());
+	}
+	else if(entry.getKey().toString().contains(&quot;vms_lst_&quot;)){
+		props.put(entry.getKey(), entry.getValue());
+//		log.info(entry.getKey() + &quot; &quot; + entry.getValue());
+	}
+	else {
+		continue;
+	}
+}</stringProp>
+            <stringProp name="BeanShellSampler.filename"></stringProp>
+            <stringProp name="BeanShellSampler.parameters"></stringProp>
+            <boolProp name="BeanShellSampler.resetInterpreter">false</boolProp>
+          </BeanShellSampler>
+          <hashTree/>
           <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="vm status" enabled="true">
             <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
@@ -8092,8 +8265,24 @@ vars.put(&quot;query&quot;, encodedQuery);
             <stringProp name="parameters"></stringProp>
             <stringProp name="filename"></stringProp>
             <stringProp name="script">log.info(&quot;***********Looking for vms according to query: &quot; + vars.get(&quot;uquery&quot;));
-log.info(&quot;***********VM id chosen: &quot; + vars.get(&quot;enttid&quot;));</stringProp>
+log.info(&quot;***********VM id chosen: &quot; + vars.get(&quot;enttid&quot;));
+
+log.info(&quot;***********Amount of vms aplly to query: &quot; + props.get(&quot;vms_lst_matchNr&quot;));</stringProp>
           </BeanShellListener>
+          <hashTree/>
+        </hashTree>
+        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="Stop if threads amount &gt; matched vms" enabled="true"/>
+        <hashTree>
+          <BeanShellSampler guiclass="BeanShellSamplerGui" testclass="BeanShellSampler" testname="BeanShell Sampler" enabled="true">
+            <stringProp name="BeanShellSampler.query">if (ctx.getThreadGroup().getNumberOfThreads() &gt; Integer.parseInt(props.get(&quot;vms_lst_matchNr&quot;).trim() )){
+	log.error(&quot;Amount of defined threads is higher than amount of mathed vms. Threads: &quot; + ctx.getThreadGroup().getNumberOfThreads() + &quot; VMs: &quot; + props.get(&quot;vms_lst_matchNr&quot;));
+	ctx.getEngine().stopTest();
+}
+</stringProp>
+            <stringProp name="BeanShellSampler.filename"></stringProp>
+            <stringProp name="BeanShellSampler.parameters"></stringProp>
+            <boolProp name="BeanShellSampler.resetInterpreter">false</boolProp>
+          </BeanShellSampler>
           <hashTree/>
         </hashTree>
         <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="If vm down - power it on + validate" enabled="true"/>
@@ -8152,6 +8341,13 @@ log.info(&quot;***********VM id chosen: &quot; + vars.get(&quot;enttid&quot;));<
               </ResponseAssertion>
               <hashTree/>
             </hashTree>
+            <TestAction guiclass="TestActionGui" testclass="TestAction" testname="Think Time" enabled="true">
+              <stringProp name="TestPlan.comments">2 min - 120000, 5 min - 300000, 30 min - 1800000</stringProp>
+              <intProp name="ActionProcessor.action">1</intProp>
+              <intProp name="ActionProcessor.target">0</intProp>
+              <stringProp name="ActionProcessor.duration">${ThinkTime}</stringProp>
+            </TestAction>
+            <hashTree/>
             <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="vm status" enabled="true">
               <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
               <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
@@ -8237,9 +8433,12 @@ FailureMessage=&quot;**********Failed to start vm id: &quot; + vars.get(&quot;en
                 </BeanShellSampler>
                 <hashTree/>
               </hashTree>
-              <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer 6sec" enabled="true">
-                <stringProp name="ConstantTimer.delay">6000</stringProp>
-              </ConstantTimer>
+              <TestAction guiclass="TestActionGui" testclass="TestAction" testname="Think Time" enabled="true">
+                <stringProp name="TestPlan.comments">2 min - 120000, 5 min - 300000, 30 min - 1800000</stringProp>
+                <intProp name="ActionProcessor.action">1</intProp>
+                <intProp name="ActionProcessor.target">0</intProp>
+                <stringProp name="ActionProcessor.duration">${ThinkTime}</stringProp>
+              </TestAction>
               <hashTree/>
               <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="vm status" enabled="true">
                 <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
@@ -8373,49 +8572,6 @@ vars.put(&quot;new_memory&quot;, String.valueOf(c));
             <boolProp name="BeanShellSampler.resetInterpreter">false</boolProp>
           </BeanShellSampler>
           <hashTree/>
-          <DebugSampler guiclass="TestBeanGUI" testclass="DebugSampler" testname="Debug Sampler" enabled="true">
-            <boolProp name="displayJMeterProperties">false</boolProp>
-            <boolProp name="displayJMeterVariables">true</boolProp>
-            <boolProp name="displaySystemProperties">false</boolProp>
-          </DebugSampler>
-          <hashTree>
-            <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
-              <boolProp name="ResultCollector.error_logging">false</boolProp>
-              <objProp>
-                <name>saveConfig</name>
-                <value class="SampleSaveConfiguration">
-                  <time>true</time>
-                  <latency>true</latency>
-                  <timestamp>true</timestamp>
-                  <success>true</success>
-                  <label>true</label>
-                  <code>true</code>
-                  <message>true</message>
-                  <threadName>true</threadName>
-                  <dataType>true</dataType>
-                  <encoding>false</encoding>
-                  <assertions>true</assertions>
-                  <subresults>true</subresults>
-                  <responseData>false</responseData>
-                  <samplerData>false</samplerData>
-                  <xml>false</xml>
-                  <fieldNames>true</fieldNames>
-                  <responseHeaders>false</responseHeaders>
-                  <requestHeaders>false</requestHeaders>
-                  <responseDataOnError>false</responseDataOnError>
-                  <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
-                  <assertionsResultsToSave>0</assertionsResultsToSave>
-                  <bytes>true</bytes>
-                  <sentBytes>true</sentBytes>
-                  <threadCounts>true</threadCounts>
-                  <idleTime>true</idleTime>
-                  <connectTime>true</connectTime>
-                </value>
-              </objProp>
-              <stringProp name="filename"></stringProp>
-            </ResultCollector>
-            <hashTree/>
-          </hashTree>
         </hashTree>
         <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="Set new_memory for vm" enabled="true"/>
         <hashTree>
@@ -8425,10 +8581,6 @@ vars.put(&quot;new_memory&quot;, String.valueOf(c));
             <stringProp name="BeanShellSampler.parameters"></stringProp>
             <boolProp name="BeanShellSampler.resetInterpreter">false</boolProp>
           </BeanShellSampler>
-          <hashTree/>
-          <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer 6sec" enabled="true">
-            <stringProp name="ConstantTimer.delay">6000</stringProp>
-          </ConstantTimer>
           <hashTree/>
           <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Set new memory" enabled="true">
             <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
@@ -8468,102 +8620,12 @@ vars.put(&quot;new_memory&quot;, String.valueOf(c));
             </ResponseAssertion>
             <hashTree/>
           </hashTree>
-        </hashTree>
-        <WhileController guiclass="WhileControllerGui" testclass="WhileController" testname="Validate VM status is Up" enabled="false">
-          <stringProp name="WhileController.condition">${__javaScript(&quot;${vm_status}&quot; != &quot;up&quot;)}  </stringProp>
-        </WhileController>
-        <hashTree>
-          <CounterConfig guiclass="CounterConfigGui" testclass="CounterConfig" testname="vm_start_cnt" enabled="true">
-            <stringProp name="CounterConfig.start">1</stringProp>
-            <stringProp name="CounterConfig.end"></stringProp>
-            <stringProp name="CounterConfig.incr">1</stringProp>
-            <stringProp name="CounterConfig.name">vm_start_cnt</stringProp>
-            <stringProp name="CounterConfig.format"></stringProp>
-            <boolProp name="CounterConfig.per_user">true</boolProp>
-            <boolProp name="CounterConfig.reset_on_tg_iteration">true</boolProp>
-          </CounterConfig>
-          <hashTree/>
-          <IfController guiclass="IfControllerPanel" testclass="IfController" testname="Bail out of while If tried too many times" enabled="true">
-            <stringProp name="IfController.condition">${vm_start_cnt}==${retries_for_vm_start}</stringProp>
-            <boolProp name="IfController.evaluateAll">false</boolProp>
-          </IfController>
-          <hashTree>
-            <BeanShellAssertion guiclass="BeanShellAssertionGui" testclass="BeanShellAssertion" testname="BeanShell Assertion" enabled="true">
-              <stringProp name="BeanShellAssertion.query">
-Failure = true;
-
-FailureMessage=&quot;**********Failed to start vm id: &quot; + vars.get(&quot;enttid&quot;) + &quot; attempt no: &quot;+ vars.get(&quot;vm_start_cnt&quot;) + &quot; out of: &quot;+ vars.get(&quot;retries_for_vm_start&quot;);</stringProp>
-              <stringProp name="BeanShellAssertion.filename"></stringProp>
-              <stringProp name="BeanShellAssertion.parameters"></stringProp>
-              <boolProp name="BeanShellAssertion.resetInterpreter">false</boolProp>
-            </BeanShellAssertion>
-            <hashTree/>
-            <BeanShellSampler guiclass="BeanShellSamplerGui" testclass="BeanShellSampler" testname="BeanShell Sampler" enabled="true">
-              <stringProp name="BeanShellSampler.query">
-FailureMessage=&quot;**********Failed to start vm id: &quot; + vars.get(&quot;enttid&quot;) + &quot; attempt no: &quot;+ vars.get(&quot;vm_start_cnt&quot;) + &quot; out of: &quot;+ vars.get(&quot;retries_for_vm_start&quot;);</stringProp>
-              <stringProp name="BeanShellSampler.filename"></stringProp>
-              <stringProp name="BeanShellSampler.parameters"></stringProp>
-              <boolProp name="BeanShellSampler.resetInterpreter">false</boolProp>
-            </BeanShellSampler>
-            <hashTree/>
-          </hashTree>
-          <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer 6sec" enabled="true">
-            <stringProp name="ConstantTimer.delay">6000</stringProp>
-          </ConstantTimer>
-          <hashTree/>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="vm status" enabled="true">
-            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
-            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
-              <collectionProp name="Arguments.arguments">
-                <elementProp name="" elementType="HTTPArgument">
-                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                  <stringProp name="Argument.value"></stringProp>
-                  <stringProp name="Argument.metadata">=</stringProp>
-                </elementProp>
-              </collectionProp>
-            </elementProp>
-            <stringProp name="HTTPSampler.domain">${engine}</stringProp>
-            <stringProp name="HTTPSampler.port">${http_port}</stringProp>
-            <stringProp name="HTTPSampler.protocol">${http_protocol}</stringProp>
-            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">${api_prefix}/${what}/${enttid}</stringProp>
-            <stringProp name="HTTPSampler.method">GET</stringProp>
-            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-            <stringProp name="HTTPSampler.response_timeout"></stringProp>
-          </HTTPSamplerProxy>
-          <hashTree>
-            <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="regex json - vm_status" enabled="true">
-              <stringProp name="RegexExtractor.useHeaders">false</stringProp>
-              <stringProp name="RegexExtractor.refname">vm_status</stringProp>
-              <stringProp name="RegexExtractor.regex">&lt;status&gt;(.+?)&lt;</stringProp>
-              <stringProp name="RegexExtractor.template">$1$</stringProp>
-              <stringProp name="RegexExtractor.default">None</stringProp>
-              <stringProp name="RegexExtractor.match_number">1</stringProp>
-              <stringProp name="Sample.scope">all</stringProp>
-              <stringProp name="Scope.variable">vm_id</stringProp>
-            </RegexExtractor>
-            <hashTree/>
-            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response code Assertion ${__samplerName}" enabled="true">
-              <collectionProp name="Asserion.test_strings">
-                <stringProp name="-1447184278">200|202</stringProp>
-              </collectionProp>
-              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
-              <boolProp name="Assertion.assume_success">false</boolProp>
-              <intProp name="Assertion.test_type">2</intProp>
-            </ResponseAssertion>
-            <hashTree/>
-          </hashTree>
-          <BeanShellSampler guiclass="BeanShellSamplerGui" testclass="BeanShellSampler" testname="Logging" enabled="true">
-            <stringProp name="BeanShellSampler.query">log.info(&quot;VM &quot; + vars.get(&quot;enttid&quot;) + &quot; Is not up yet. waiting inside while loop no: &quot; + vars.getIteration() + &quot; attempt no: &quot; + vars.get(&quot;vm_start_cnt&quot;) + &quot; of: &quot; + vars.get(&quot;retries_for_vm_start&quot;));</stringProp>
-            <stringProp name="BeanShellSampler.filename"></stringProp>
-            <stringProp name="BeanShellSampler.parameters"></stringProp>
-            <boolProp name="BeanShellSampler.resetInterpreter">false</boolProp>
-          </BeanShellSampler>
+          <TestAction guiclass="TestActionGui" testclass="TestAction" testname="Think Time" enabled="true">
+            <stringProp name="TestPlan.comments">2 min - 120000, 5 min - 300000, 30 min - 1800000</stringProp>
+            <intProp name="ActionProcessor.action">1</intProp>
+            <intProp name="ActionProcessor.target">0</intProp>
+            <stringProp name="ActionProcessor.duration">${ThinkTime}</stringProp>
+          </TestAction>
           <hashTree/>
         </hashTree>
         <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="Verify VM memory amount" enabled="true"/>
@@ -8648,10 +8710,6 @@ FailureMessage=&quot;**********Failed to set new memory to vm id: &quot; + vars.
             <boolProp name="BeanShellSampler.resetInterpreter">false</boolProp>
           </BeanShellSampler>
           <hashTree/>
-          <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer 6sec" enabled="true">
-            <stringProp name="ConstantTimer.delay">6000</stringProp>
-          </ConstantTimer>
-          <hashTree/>
           <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Set new memory" enabled="true">
             <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
@@ -8690,13 +8748,16 @@ FailureMessage=&quot;**********Failed to set new memory to vm id: &quot; + vars.
             </ResponseAssertion>
             <hashTree/>
           </hashTree>
-        </hashTree>
-        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="Reboot VM" enabled="true"/>
-        <hashTree>
-          <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer 6sec" enabled="true">
-            <stringProp name="ConstantTimer.delay">6000</stringProp>
-          </ConstantTimer>
+          <TestAction guiclass="TestActionGui" testclass="TestAction" testname="Think Time" enabled="true">
+            <stringProp name="TestPlan.comments">2 min - 120000, 5 min - 300000, 30 min - 1800000</stringProp>
+            <intProp name="ActionProcessor.action">1</intProp>
+            <intProp name="ActionProcessor.target">0</intProp>
+            <stringProp name="ActionProcessor.duration">${ThinkTime}</stringProp>
+          </TestAction>
           <hashTree/>
+        </hashTree>
+        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="Reboot VM + validate" enabled="true"/>
+        <hashTree>
           <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Reboot VM" enabled="true">
             <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
@@ -8733,6 +8794,13 @@ FailureMessage=&quot;**********Failed to set new memory to vm id: &quot; + vars.
             </ResponseAssertion>
             <hashTree/>
           </hashTree>
+          <TestAction guiclass="TestActionGui" testclass="TestAction" testname="Think Time" enabled="true">
+            <stringProp name="TestPlan.comments">2 min - 120000, 5 min - 300000, 30 min - 1800000</stringProp>
+            <intProp name="ActionProcessor.action">1</intProp>
+            <intProp name="ActionProcessor.target">0</intProp>
+            <stringProp name="ActionProcessor.duration">${ThinkTime}</stringProp>
+          </TestAction>
+          <hashTree/>
           <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="vm status" enabled="true">
             <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
@@ -8780,6 +8848,106 @@ FailureMessage=&quot;**********Failed to set new memory to vm id: &quot; + vars.
             </ResponseAssertion>
             <hashTree/>
           </hashTree>
+          <WhileController guiclass="WhileControllerGui" testclass="WhileController" testname="While VM not Up" enabled="true">
+            <stringProp name="WhileController.condition">${__javaScript(&quot;${vm_status}&quot; != &quot;up&quot;)}  </stringProp>
+          </WhileController>
+          <hashTree>
+            <CounterConfig guiclass="CounterConfigGui" testclass="CounterConfig" testname="vm_start_cnt" enabled="true">
+              <stringProp name="CounterConfig.start">1</stringProp>
+              <stringProp name="CounterConfig.end"></stringProp>
+              <stringProp name="CounterConfig.incr">1</stringProp>
+              <stringProp name="CounterConfig.name">vm_start_cnt</stringProp>
+              <stringProp name="CounterConfig.format"></stringProp>
+              <boolProp name="CounterConfig.per_user">true</boolProp>
+              <boolProp name="CounterConfig.reset_on_tg_iteration">true</boolProp>
+            </CounterConfig>
+            <hashTree/>
+            <IfController guiclass="IfControllerPanel" testclass="IfController" testname="Bail out of while If tried too many times" enabled="true">
+              <stringProp name="IfController.condition">${vm_start_cnt}==${retries_for_vm_start}</stringProp>
+              <boolProp name="IfController.evaluateAll">false</boolProp>
+            </IfController>
+            <hashTree>
+              <BeanShellAssertion guiclass="BeanShellAssertionGui" testclass="BeanShellAssertion" testname="BeanShell Assertion" enabled="true">
+                <stringProp name="BeanShellAssertion.query">
+Failure = true;
+
+FailureMessage=&quot;**********Failed to start vm id: &quot; + vars.get(&quot;enttid&quot;) + &quot; attempt no: &quot;+ vars.get(&quot;vm_start_cnt&quot;) + &quot; out of: &quot;+ vars.get(&quot;retries_for_vm_start&quot;);</stringProp>
+                <stringProp name="BeanShellAssertion.filename"></stringProp>
+                <stringProp name="BeanShellAssertion.parameters"></stringProp>
+                <boolProp name="BeanShellAssertion.resetInterpreter">false</boolProp>
+              </BeanShellAssertion>
+              <hashTree/>
+              <BeanShellSampler guiclass="BeanShellSamplerGui" testclass="BeanShellSampler" testname="BeanShell Sampler" enabled="true">
+                <stringProp name="BeanShellSampler.query">
+FailureMessage=&quot;**********Failed to start vm id: &quot; + vars.get(&quot;enttid&quot;) + &quot; attempt no: &quot;+ vars.get(&quot;vm_start_cnt&quot;) + &quot; out of: &quot;+ vars.get(&quot;retries_for_vm_start&quot;);</stringProp>
+                <stringProp name="BeanShellSampler.filename"></stringProp>
+                <stringProp name="BeanShellSampler.parameters"></stringProp>
+                <boolProp name="BeanShellSampler.resetInterpreter">false</boolProp>
+              </BeanShellSampler>
+              <hashTree/>
+            </hashTree>
+            <TestAction guiclass="TestActionGui" testclass="TestAction" testname="Think Time" enabled="true">
+              <stringProp name="TestPlan.comments">2 min - 120000, 5 min - 300000, 30 min - 1800000</stringProp>
+              <intProp name="ActionProcessor.action">1</intProp>
+              <intProp name="ActionProcessor.target">0</intProp>
+              <stringProp name="ActionProcessor.duration">${ThinkTime}</stringProp>
+            </TestAction>
+            <hashTree/>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="vm status" enabled="true">
+              <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                <collectionProp name="Arguments.arguments">
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value"></stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain">${engine}</stringProp>
+              <stringProp name="HTTPSampler.port">${http_port}</stringProp>
+              <stringProp name="HTTPSampler.protocol">${http_protocol}</stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">${api_prefix}/${what}/${enttid}</stringProp>
+              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree>
+              <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="regex json - vm_status" enabled="true">
+                <stringProp name="RegexExtractor.useHeaders">false</stringProp>
+                <stringProp name="RegexExtractor.refname">vm_status</stringProp>
+                <stringProp name="RegexExtractor.regex">&lt;status&gt;(.+?)&lt;</stringProp>
+                <stringProp name="RegexExtractor.template">$1$</stringProp>
+                <stringProp name="RegexExtractor.default">None</stringProp>
+                <stringProp name="RegexExtractor.match_number">1</stringProp>
+                <stringProp name="Sample.scope">all</stringProp>
+                <stringProp name="Scope.variable">vm_id</stringProp>
+              </RegexExtractor>
+              <hashTree/>
+              <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response code Assertion ${__samplerName}" enabled="true">
+                <collectionProp name="Asserion.test_strings">
+                  <stringProp name="-1447184278">200|202</stringProp>
+                </collectionProp>
+                <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+                <boolProp name="Assertion.assume_success">false</boolProp>
+                <intProp name="Assertion.test_type">2</intProp>
+              </ResponseAssertion>
+              <hashTree/>
+            </hashTree>
+            <BeanShellSampler guiclass="BeanShellSamplerGui" testclass="BeanShellSampler" testname="Logging" enabled="true">
+              <stringProp name="BeanShellSampler.query">log.info(&quot;VM &quot; + vars.get(&quot;enttid&quot;) + &quot; Is not up yet. waiting inside while loop no: &quot; + vars.getIteration() + &quot; attempt no: &quot; + vars.get(&quot;vm_start_cnt&quot;) + &quot; of: &quot; + vars.get(&quot;retries_for_vm_start&quot;));</stringProp>
+              <stringProp name="BeanShellSampler.filename"></stringProp>
+              <stringProp name="BeanShellSampler.parameters"></stringProp>
+              <boolProp name="BeanShellSampler.resetInterpreter">false</boolProp>
+            </BeanShellSampler>
+            <hashTree/>
+          </hashTree>
         </hashTree>
         <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
           <boolProp name="ResultCollector.error_logging">false</boolProp>
@@ -8818,7 +8986,7 @@ FailureMessage=&quot;**********Failed to set new memory to vm id: &quot; + vars.
         </ResultCollector>
         <hashTree/>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Scenario 1 Migration, Snapshot, restore" enabled="true">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Scenario 1 Migration, Snapshot, restore" enabled="false">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
